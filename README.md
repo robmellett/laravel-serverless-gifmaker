@@ -1,8 +1,5 @@
-## Invoke the CLI
+## Laravel Serverless GifMaker
 
-```shell
-bref cli serverless-gifmaker-dev-artisan -- inspire
+Just a little application to demonstrate custom Lambda layers.
 
-serverless invoke -f event --data='{"name":"Rob"}'
-serverless invoke --function event --data '{"name":"Tobias"}'
-```
+In this tutorial, we will upload a file to AWS S3, have a Laravel Serverless application convert the video to a gif. 
