@@ -1,0 +1,61 @@
+service: serverless-gifmaker
+
+provider:
+  name: aws
+  # The AWS region in which to deploy (us-east-1 is the default)
+  region: ap-southeast-2
+
+  # The stage of the application, e.g. dev, production, staging… ('dev' is the default)
+  stage: dev
+  runtime: provided.al2
+  lambdaHashingVersion: 20201221
+  versionFunctions: false
+
+  environment:
+    APP_ENV: dev
+    APP_DEBUG: false
+    AWS_BUCKET: serverless-gifmaker
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+      Resource: "arn:aws:s3:::${self:custom.bucket}/*"
+
+package:
+  # Directories to exclude from deployment
+  patterns:
+    - '!node_modules/**'
+    - '!public/storage'
+    - '!resources/assets/**'
+    - '!storage/**'
+    - '!tests/**'
+
+functions:
+  # This function lets us run artisan commands in Lambda
+  artisan:
+    handler: artisan
+    timeout: 120 # in seconds
+    environment:
+      ARTISAN_COMMAND: 'generate:gif'
+    layers:
+      - ${bref:layer.php-80} # PHP
+      - ${bref:layer.console} # The "console" layer
+      - ${cf:ffmpeg-layer-dev.FfmpegLayerExport}
+
+  event:
+    handler: serverless-handler.php
+    timeout: 10 # in seconds
+    events:
+      - s3: ${self:custom.bucket}
+    layers:
+      - ${bref:layer.php-80}
+      - ${cf:ffmpeg-layer-dev.FfmpegLayerExport}
+
+custom:
+  bucket: serverless-gifmaker
+
+plugins:
+  - ./vendor/bref/bref
+  - ./vendor/runtime/bref-layer
