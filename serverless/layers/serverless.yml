@@ -2,6 +2,7 @@ service: ffmpeg-layer
 
 provider:
   name: aws
+  region: ap-southeast-2
 
 layers:
   ffmpeg:
