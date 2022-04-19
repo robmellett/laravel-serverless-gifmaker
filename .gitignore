@@ -15,3 +15,6 @@ yarn-error.log
 /.vscode
 
 .serverless/
+serverless/layers/ffmpg
+
+serverless/layers/ffmpeg/
